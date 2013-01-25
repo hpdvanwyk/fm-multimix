@@ -277,26 +277,36 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Difference between maximum and minimum freqencies exceed sampled spectrum\n");
 		exit(1);
 	}
-	if(!center_freq)
+	/*if(!center_freq)
 	{
 		center_freq= (min+max)/2;
 
 		//do not use frequencies around center_freq.
 		//combination of dc from ADC and artifacts from splitting spectrum.
-	//	for(i=0;i<freq_count;i++)
-	//	{
-	//		if(freqs[i]< center_freq+BANDWIDTH && freqs[i]> center_freq-BANDWIDTH)
-	//		{
-	//			center_freq+=BANDWIDTH;
-	//			break;
-	//		}
-	//	}
+		for(i=0;i<freq_count;i++)
+		{
+			if(freqs[i]< center_freq+BANDWIDTH && freqs[i]> center_freq-BANDWIDTH)
+			{
+				center_freq+=BANDWIDTH;
+				break;
+			}
+		}
+	}*/
 	//	for now this has to be handled externally
+	if(!center_freq)
+	{
+		arg_msg();
 	}
+		
 
 	for(i=0;i<freq_count;i++)
 	{
 		freqs[i]=((freqs[i]-center_freq) * FFT_LEN / SAMP_RATE)+(FFT_LEN/2);
+		if(freqs[i]>FFT_LEN || freqs[i]<0)
+		{
+			fprintf(stderr, "Frequencies too far away from center frequency.\n");
+			arg_msg();
+		}
 	}
 
 	demod_processes	= get_process_list();
