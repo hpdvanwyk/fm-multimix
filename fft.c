@@ -32,7 +32,7 @@
 
 double convol [11]= {0.302196,0.495343,0.662907,0.818410,0.949743,1.003225,0.943759,0.817320,0.664393,0.491787,0.295309};
 
-fft_obj* fft_init()
+fft_obj* fft_init(float threshold)
 {
 	int i;
 
@@ -56,6 +56,7 @@ fft_obj* fft_init()
 	obj->avg=0;
 	obj->avg_calc=0;
 	obj->fftavg_counter=FFT_AVG;
+	obj->threshold=threshold;
 
 	return obj;
 }
@@ -123,7 +124,7 @@ int do_fft(fft_obj* obj, uint8_t* buff, int len)
 
 		for ( i=0; i<FFT_LEN ; i++)
 		{
-			if(obj->band_power[i] > obj->avg*DETECTION_LEVEL)
+			if(obj->band_power[i] > obj->avg*obj->threshold)
 			{
 				int largest =1;
 				for(j=0; j<BANDWIDTH_BINS ; j++)

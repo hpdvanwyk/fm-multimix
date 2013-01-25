@@ -43,6 +43,7 @@ typedef struct fft_s
 	double result [FFT_LEN];
 	double window [FFT_LEN];
 	int fftavg_counter;
+	float threshold;
 
 	fftw_complex *in;
 	fftw_complex *out;
@@ -50,7 +51,7 @@ typedef struct fft_s
 }
 fft_obj;
 
-fft_obj* fft_init();
+fft_obj* fft_init(float threshold);
 
 void fft_free(fft_obj* obj);
 

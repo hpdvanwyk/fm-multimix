@@ -52,6 +52,8 @@ long long int samples_read=0;
 int freqs[FFT_LEN];
 int freq_count=0;
 int verbosity=0;
+float detection_threshold=4;
+int detection_misses=10;
 
 void mix_signal(demodproc* proc, uint8_t* inbuf, uint8_t* outbuf)
 {
@@ -212,7 +214,11 @@ int write_to_demod()
 
 void arg_msg()
 {
-	fprintf(stderr, "put something descriptive here\n");
+	fprintf(stderr, "\n\tfm_multimix -f center frequency [-options] frequency1 frequency2 ...\n"
+									"\t-f Center frequency of the signal on stdin\n"	
+									"\t[-t The threshold at which the system will start recording.\n"
+									"\tMeasured in channel level/average signal level (default 4)]\n"	
+			);
 	exit(1);
 }
 
@@ -222,12 +228,15 @@ int main(int argc, char *argv[])
 	int running =1;
 	int opt;
 
-	while ((opt = getopt(argc, argv, "f:v")) != -1) 
+	while ((opt = getopt(argc, argv, "f:t:v")) != -1) 
 	{
 		switch (opt) 
 		{
 			case 'f':
 				center_freq = (int)atof(optarg);
+				break;
+			case 't':
+				detection_threshold = (int)atof(optarg);
 				break;
 			case 'v':
 				verbosity++;
@@ -291,7 +300,7 @@ int main(int argc, char *argv[])
 	}
 
 	demod_processes	= get_process_list();
-	chanfinder_obj = fft_init();
+	chanfinder_obj = fft_init(detection_threshold);
 
 	fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK ); 
 	fcntl(STDOUT_FILENO, F_SETFL, fcntl(STDOUT_FILENO, F_GETFL) | O_NONBLOCK);
