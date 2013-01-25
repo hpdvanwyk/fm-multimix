@@ -8,7 +8,7 @@ This program takes a 8 bit unsigned IQ pair stream as input and downmixes select
 
 Example use
 -----------
-	rtl_sdr -f xxx000000 -s 1014300 - | ./fm-multimix -f xxx500000 xxx600000 xxx700000
+	rtl_sdr -f xxx500000 -s 1014300 - | ./fm_multimix -f xxx500000 xxx600000 xxx700000
 
 This will record anything at xxx,6MHz and xxx,7MHz. Any amount of channels can be specified as long as they are within 1014300Hz centered at xxx,5MHz and the computer you are using it on has sufficient processing power. The Raspberry PI for example can just about decode 2 channels in real time.
 
