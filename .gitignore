@@ -15,3 +15,9 @@
 *.exe
 *.out
 *.app
+
+# Build directory
+/build/
+
+#Editor temporary files
+*~
