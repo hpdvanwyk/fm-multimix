@@ -135,7 +135,7 @@ int get_process_count()
 	return process_count;
 }
 
-void check_processes(double* bins, int* freqs, int freqcount, long long int total_read) 
+void check_processes(double* bins, int* freqs, int freqcount, long long int total_read, int misses) 
 {
 	int i,j;
 	int miss =1;
@@ -165,7 +165,7 @@ void check_processes(double* bins, int* freqs, int freqcount, long long int tota
 			if(bin_list[freqs[i]]!=0)
 			{
 				bin_list[freqs[i]]->detection_misses++;
-				if(bin_list[freqs[i]]->detection_misses>2)
+				if(bin_list[freqs[i]]->detection_misses>misses)
 				{
 					fprintf(stderr, "killing %d\n", freqs[i]);
 					end_process(bin_list[freqs[i]]);

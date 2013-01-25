@@ -47,6 +47,6 @@ int get_process_count();
 
 //checks if process exists and creates if not, 
 //should handle small frequency instabilities
-void check_processes(double* bins, int* freqs, int freqcount, long long int total_read); 
+void check_processes(double* bins, int* freqs, int freqcount, long long int total_read, int misses); 
 
 #endif

@@ -152,9 +152,9 @@ int read_data()
 								i,(i-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq, results[i]);
 					}
 				}
-				check_processes(results, freqs, freq_count, samples_read); 
+				check_processes(results, freqs, freq_count, samples_read, detection_misses); 
 			}
-			skip = 50;
+			skip = 30;
 		}
 		else
 		{
@@ -216,8 +216,11 @@ void arg_msg()
 {
 	fprintf(stderr, "\n\tfm_multimix -f center frequency [-options] frequency1 frequency2 ...\n"
 									"\t-f Center frequency of the signal on stdin\n"	
+									"\t[-v Increases level of debug output/verbosity]\n"	
 									"\t[-t The threshold at which the system will start recording.\n"
 									"\tMeasured in channel level/average signal level (default 4)]\n"	
+									"\t[-m The amount of times a channel has to be under the threshold\n"
+									"\tbefore recording will stop (default 10, approx 10 seconds)]\n"
 			);
 	exit(1);
 }
@@ -228,7 +231,7 @@ int main(int argc, char *argv[])
 	int running =1;
 	int opt;
 
-	while ((opt = getopt(argc, argv, "f:t:v")) != -1) 
+	while ((opt = getopt(argc, argv, "f:t:m:v")) != -1) 
 	{
 		switch (opt) 
 		{
@@ -237,6 +240,9 @@ int main(int argc, char *argv[])
 				break;
 			case 't':
 				detection_threshold = (int)atof(optarg);
+				break;
+			case 'm':
+				detection_misses = (int)atof(optarg);
 				break;
 			case 'v':
 				verbosity++;

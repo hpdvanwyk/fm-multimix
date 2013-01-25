@@ -46,8 +46,6 @@ Todo
 ----------
 -More options on what text output to generate.
 
--Options for the VOX sensitivity.
-
 -Decrease bit rate of saved files.
 
 -Compress saved files.
