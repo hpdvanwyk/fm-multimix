@@ -57,7 +57,9 @@ int create_process(int bin, long long int totalread)
 		close(in[0]);
 		close(out[1]);
 		//snprintf(cmdstring, 255, "cat > output%d.raw", bin);
-		snprintf(cmdstring, 255, "rtl_fm -s 22050 -P -C -i 46 -l 100 - |sox -t raw -r 22050 -e signed-integer -b 16 -c 1 -L - output%d_%lld.wav sinc 0-5000 -n 128 ", bin, totalread/SAMP_RATE/2);
+		snprintf(cmdstring, 255, "rtl_fm -s 22050 -P -C -i 46 -l 150 - |"
+				"sox -t raw -r 22050 -e signed-integer -b 16 -c 1 -L - "
+				"-r 8000 output%d_%lld.wav sinc 0-3000 -n 128 ", bin, totalread/SAMP_RATE/2);
 
 		execl("/bin/sh", "sh", "-c", cmdstring , (char *)NULL);
 

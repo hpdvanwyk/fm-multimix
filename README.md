@@ -46,8 +46,6 @@ Todo
 ----------
 -More options on what text output to generate.
 
--Decrease bit rate of saved files.
-
 -Compress saved files.
 
 -Add an extra buffer to avoid losing some sound when recording starts.
@@ -55,3 +53,5 @@ Todo
 -Add options for output files.
 
 -Add ability to install.
+
+-Better rtl-fm integration.
