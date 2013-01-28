@@ -54,6 +54,7 @@ int freq_count=0;
 int verbosity=0;
 float detection_threshold=4;
 int detection_misses=10;
+int filter_sub=0;
 
 void mix_signal(demodproc* proc, uint8_t* inbuf, uint8_t* outbuf)
 {
@@ -157,7 +158,7 @@ int read_data()
 					}
 				}
 				check_processes(results, freqs, freq_count, samples_read,
-					 	detection_misses, center_freq); 
+					 	detection_misses, center_freq, filter_sub); 
 			}
 			skip = 30;
 		}
@@ -226,6 +227,7 @@ void arg_msg()
 									"\tMeasured in channel level/average signal level (default 4)]\n"	
 									"\t[-m The amount of times a channel has to be under the threshold\n"
 									"\tbefore recording will stop (default 10, approx 10 seconds)]\n"
+									"\t[-s Filter out sub audible (<300 Hz) tones.]\n"	
 			);
 	exit(1);
 }
@@ -236,7 +238,7 @@ int main(int argc, char *argv[])
 	int running =1;
 	int opt;
 
-	while ((opt = getopt(argc, argv, "f:t:m:v")) != -1) 
+	while ((opt = getopt(argc, argv, "f:t:m:vs")) != -1) 
 	{
 		switch (opt) 
 		{
@@ -251,6 +253,9 @@ int main(int argc, char *argv[])
 				break;
 			case 'v':
 				verbosity++;
+				break;
+			case 's':
+				filter_sub=1;
 				break;
 			default:
 				arg_msg();
