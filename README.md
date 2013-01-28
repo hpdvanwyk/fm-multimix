@@ -44,8 +44,6 @@ Building
 
 Todo
 ----------
--More options on what text output to generate.
-
 -Compress saved files.
 
 -Add an extra buffer to avoid losing some sound when recording starts.

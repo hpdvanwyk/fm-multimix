@@ -117,7 +117,7 @@ int read_data()
 		//	fprintf(stderr,"reading\n");
 		if(readcount == 0)
 		{
-			fprintf(stderr,"mixer end of file\n");
+			fprintf(stderr,"End of file reached, exiting.\n");
 			return 0;
 		}
 		if(readcount == -1)
@@ -148,11 +148,16 @@ int read_data()
 				{
 					if(results[i] > 0)
 					{
-						fprintf(stderr,"something at %d (%dHz) with %f\n",
-								i,(i-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq, results[i]);
+						if(verbosity > 0)
+						{
+							fprintf(stderr,"[%lld] Possible transmission at %d Hz with %f\n",
+									samples_read/SAMP_RATE/2,
+								 	(i-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq, results[i]);
+						}
 					}
 				}
-				check_processes(results, freqs, freq_count, samples_read, detection_misses); 
+				check_processes(results, freqs, freq_count, samples_read,
+					 	detection_misses, center_freq); 
 			}
 			skip = 30;
 		}
