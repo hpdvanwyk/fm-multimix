@@ -31,7 +31,8 @@
 #define DETECTION_LEVEL 2
 #define SAMP_RATE 1014300
 #define BANDWIDTH 12500
-#define BANDWIDTH_BINS (int)((double)BANDWIDTH/((double)SAMP_RATE/(double)FFT_LEN))
+//#define BANDWIDTH_BINS (int)((double)BANDWIDTH/((double)SAMP_RATE/(double)FFT_LEN))
+#define BANDWIDTH_BINS 11
 
 
 typedef struct fft_s

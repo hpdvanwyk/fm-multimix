@@ -76,7 +76,7 @@ double calc_band_power(double* fft)
 	{
 		tot +=( *(fft+(i-(BANDWIDTH_BINS-1)/2)) /FFT_AVG)*convol[i];
 	}
-	return tot/7;
+	return tot;
 }
 
 int do_fft(fft_obj* obj, uint8_t* buff, int len)
