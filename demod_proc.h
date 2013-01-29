@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "sinegen.h"
+#include "globals.h"
 
 typedef struct demodproc_struct
 {
@@ -33,6 +34,8 @@ typedef struct demodproc_struct
 	int detection_misses;
 	int bin;
 	int serviced; //1 if it has received the latest data
+	uint8_t outbuf[READ_SIZE];
+	int outbuf_written;
 	sine_gen* real;
 	sine_gen* imag;
 

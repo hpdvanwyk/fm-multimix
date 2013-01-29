@@ -80,6 +80,7 @@ int create_process(int bin, long long int totalread, int filter_sub)
 	newproc->bin = bin;
 	newproc->detection_misses = 0;
 	newproc->serviced = 0;
+	newproc->outbuf_written=0;
 
 	newproc->real = sine_set_up(-(float)(abs(bin-(FFT_LEN/2)))/FFT_LEN , 0, 65535);
 	//amplitude is 2^16-1

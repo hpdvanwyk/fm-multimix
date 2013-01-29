@@ -24,6 +24,7 @@ find_library(FFTW_LIBRARY
 add_library (fft_lib fft.c)
 add_library (sinegen sinegen.c)
 add_library (demod_proc demod_proc.c)
+add_library (circ_buffer circ_buffer.c)
 
 #add_executable (fft test_fft.c)
 #add_executable (fft_conv fft_conv_gen.c)
@@ -37,4 +38,4 @@ target_link_libraries(sinegen m)
 #target_link_libraries(fft_conv fftw3)
 #target_link_libraries(test_sine sinegen)
 target_link_libraries(demod_proc sinegen)
-target_link_libraries(fm_multimix fft_lib sinegen demod_proc)
+target_link_libraries(fm_multimix fft_lib sinegen demod_proc circ_buffer)

@@ -32,12 +32,13 @@
 #include "fft.h"
 #include "sinegen.h"
 #include "demod_proc.h"
+#include "circ_buffer.h"
+#include "globals.h"
 
 fd_set readdesc;
 fd_set writedesc;
-uint8_t inbuf [FFT_LEN*2];
-uint8_t outbuf [FFT_LEN*2];
-int hasbuf =0;
+uint8_t inbuf [READ_SIZE];
+uint8_t outbuf [READ_SIZE];
 fft_obj* chanfinder_obj;
 int chans_found;
 double* results;
@@ -55,6 +56,7 @@ int verbosity=0;
 float detection_threshold=4;
 int detection_misses=10;
 int filter_sub=0;
+struct circ_buf circ_buffer;
 
 void mix_signal(demodproc* proc, uint8_t* inbuf, uint8_t* outbuf)
 {
@@ -64,7 +66,7 @@ void mix_signal(demodproc* proc, uint8_t* inbuf, uint8_t* outbuf)
 	int32_t tmpinreal;
 	int32_t tmpinimag;
 	
-	for(j=0;j<FFT_LEN*2;j+=2)
+	for(j=0;j<READ_SIZE;j+=2)
 	{
 		tmpreal = sine_next_val(proc->real);
 		tmpimag = sine_next_val(proc->imag);
@@ -82,19 +84,15 @@ void set_file_descriptors()
 	FD_ZERO(&writedesc);
 	FD_ZERO(&readdesc);
 
-	if(!hasbuf)
+	if(circSpaceLeft(&circ_buffer)>=4096)
 	{
 		FD_SET(STDIN_FILENO, &readdesc);
 		if(STDIN_FILENO > highdesc)
 		{
 			highdesc = STDIN_FILENO;
 		}
-		for(i=0; i<get_process_count(); i++)
-		{
-			demod_processes[i]->serviced=0;
-		}
 	}
-	if(hasbuf)
+	if(circSpaceLeft(&circ_buffer)<4096)
 	{
 		for(i=0; i<get_process_count(); i++)
 		{
@@ -114,8 +112,8 @@ int read_data()
 {
 	if(FD_ISSET(STDIN_FILENO, &readdesc))
 	{
-		readcount = fread(inbuf, sizeof(uint8_t), FFT_LEN*2, stdin);  
-		//	fprintf(stderr,"reading\n");
+		//readcount = fread(inbuf, sizeof(uint8_t), READ_SIZE, stdin);  
+		readcount = read(STDIN_FILENO, inbuf, READ_SIZE);
 		if(readcount == 0)
 		{
 			fprintf(stderr,"End of file reached, exiting.\n");
@@ -133,8 +131,12 @@ int read_data()
 				return 0;
 			}
 		}
-		hasbuf=1;
-		samples_read+=FFT_LEN*2;
+		for(i=0; i<get_process_count(); i++)
+		{
+			demod_processes[i]->serviced=0;
+		}
+		samples_read+=readcount;
+		circWrite(&circ_buffer, inbuf, readcount);
 
 		
 		if(skip == 0)
@@ -160,7 +162,7 @@ int read_data()
 				check_processes(results, freqs, freq_count, samples_read,
 					 	detection_misses, center_freq, filter_sub); 
 			}
-			skip = 30;
+			skip = 15;
 		}
 		else
 		{
@@ -176,8 +178,15 @@ int write_to_demod()
 	{
 		if(FD_ISSET(demod_processes[i]->outpipe, &writedesc))
 		{
-			mix_signal(demod_processes[i],inbuf,outbuf);
-			int writecount = write(demod_processes[i]->outpipe, outbuf, FFT_LEN*2);
+			int writecount;
+			if(demod_processes[i]->outbuf_written == 0)
+			{
+				circPeek(&circ_buffer,inbuf,READ_SIZE);
+				mix_signal(demod_processes[i],inbuf,demod_processes[i]->outbuf);
+			}
+			writecount = write(demod_processes[i]->outpipe,
+				 	demod_processes[i]->outbuf + demod_processes[i]->outbuf_written,
+				 	READ_SIZE-demod_processes[i]->outbuf_written);
 			if(writecount == 0)
 			{
 				close(demod_processes[i]->outpipe);
@@ -194,8 +203,15 @@ int write_to_demod()
 					return 0;
 				}
 			}
-			//	hasbuf=0;
-			demod_processes[i]->serviced=1;
+			else
+			{
+				demod_processes[i]->outbuf_written += writecount;
+			}
+			if(demod_processes[i]->outbuf_written == READ_SIZE)
+			{
+				demod_processes[i]->outbuf_written=0;
+				demod_processes[i]->serviced=1;
+			}
 
 		}
 	}
@@ -213,7 +229,7 @@ int write_to_demod()
 	}
 	if(serviced)
 	{
-		hasbuf = 0;
+		circReadAdvance(&circ_buffer, READ_SIZE);
 	}
 	return 1;
 }
@@ -327,6 +343,7 @@ int main(int argc, char *argv[])
 
 	demod_processes	= get_process_list();
 	chanfinder_obj = fft_init(detection_threshold);
+	circInit(&circ_buffer, SAMP_RATE*4);//should give about a second of buffering
 
 	fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK ); 
 	fcntl(STDOUT_FILENO, F_SETFL, fcntl(STDOUT_FILENO, F_GETFL) | O_NONBLOCK);
