@@ -46,8 +46,6 @@ Todo
 ----------
 -Compress saved files.
 
--Add an extra buffer to avoid losing some sound when recording starts.
-
 -Add options for output files.
 
 -Add ability to install.
