@@ -51,3 +51,5 @@ Todo
 -Add ability to install.
 
 -Better rtl-fm integration.
+
+-Output files with proper date.

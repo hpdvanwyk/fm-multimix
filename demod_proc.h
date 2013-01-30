@@ -42,7 +42,7 @@ typedef struct demodproc_struct
 }
 demodproc;
 
-int create_process(int bin, long long int totalread, int filter_sub);
+int create_process(int bin, long long int totalread, int filter_sub, int center_freq);
 void end_process(demodproc* proc);
 
 demodproc** get_process_list();
