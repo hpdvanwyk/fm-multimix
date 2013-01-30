@@ -30,8 +30,8 @@
 #include <unistd.h>
 #include <fftw3.h>
 
-#define FFT_LEN 1024
-#define FFT_AVG 4096
+#define FFT_LEN 2024
+#define FFT_AVG 4096*4
 #define DETECTION_LEVEL 6
 #define SAMP_RATE 1102500
 
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 				{
 					if(i>FFT_LEN/2-BANDWIDTH_BINS/2 && i<FFT_LEN/2+BANDWIDTH_BINS/2)
 					{
-						fprintf(stderr, "%f,", (fftavg[i]/FFT_AVG)/1200000);
+						fprintf(stderr, "%f,", (fftavg[i]/FFT_AVG)/(1710000*16));
 					}
 					fftavg[i]=0;
 				}
