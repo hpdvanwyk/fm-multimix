@@ -40,7 +40,7 @@ fd_set writedesc;
 uint8_t inbuf [READ_SIZE];
 uint8_t outbuf [READ_SIZE];
 fft_obj* chanfinder_obj;
-int chans_found;
+int fft_has_results;
 double* results;
 int skip=0;
 int i;
@@ -141,9 +141,9 @@ int read_data()
 		
 		if(skip == 0)
 		{
-			chans_found = do_fft(chanfinder_obj, inbuf, readcount);
+			fft_has_results = do_fft(chanfinder_obj, inbuf, readcount);
 
-			if(chans_found)
+			if(fft_has_results)
 			{
 				results= get_fft_results(chanfinder_obj);
 				int i;

@@ -139,7 +139,6 @@ int do_fft(fft_obj* obj, uint8_t* buff, int len)
 				if(largest)
 				{
 					obj->result[i]=obj->band_power[i]/obj->avg;
-					retval++;
 				}
 				else
 				{
@@ -157,6 +156,7 @@ int do_fft(fft_obj* obj, uint8_t* buff, int len)
 			obj->fftavg[i]=0;
 			obj->band_power[i]=0;
 		}
+		retval=1;
 	}
 
 	return retval;
