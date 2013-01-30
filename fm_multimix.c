@@ -139,7 +139,7 @@ int read_data()
 		circWrite(&circ_buffer, inbuf, readcount);
 
 		
-		if(skip == 0)
+		if(skip == 0)//no need to do an FFT every time
 		{
 			fft_has_results = do_fft(chanfinder_obj, inbuf, readcount);
 
@@ -343,7 +343,7 @@ int main(int argc, char *argv[])
 
 	demod_processes	= get_process_list();
 	chanfinder_obj = fft_init(detection_threshold);
-	circInit(&circ_buffer, SAMP_RATE*4);//should give about a second of buffering
+	circInit(&circ_buffer, SAMP_RATE*4);//should give about two seconds of buffering
 
 	fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK ); 
 	fcntl(STDOUT_FILENO, F_SETFL, fcntl(STDOUT_FILENO, F_GETFL) | O_NONBLOCK);
