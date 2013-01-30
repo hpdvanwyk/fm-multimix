@@ -57,6 +57,7 @@ float detection_threshold=4;
 int detection_misses=10;
 int filter_sub=0;
 struct circ_buf circ_buffer;
+int fast_mode=0;
 
 void mix_signal(demodproc* proc, uint8_t* inbuf, uint8_t* outbuf)
 {
@@ -160,9 +161,9 @@ int read_data()
 					}
 				}
 				check_processes(results, freqs, freq_count, samples_read,
-					 	detection_misses, center_freq, filter_sub); 
+					 	detection_misses, center_freq, filter_sub, fast_mode); 
 			}
-			skip = 15;
+			skip = 120;
 		}
 		else
 		{
@@ -244,6 +245,8 @@ void arg_msg()
 									"\t[-m The amount of times a channel has to be under the threshold\n"
 									"\tbefore recording will stop (default 10, approx 10 seconds)]\n"
 									"\t[-s Filter out sub audible (<300 Hz) tones.]\n"	
+									"\t[-S Speed boost. Turns of nice features like output filtering\n"
+									"\tin an attempt to improve speed. (defualt off)]\n"	
 			);
 	exit(1);
 }
@@ -254,7 +257,7 @@ int main(int argc, char *argv[])
 	int running =1;
 	int opt;
 
-	while ((opt = getopt(argc, argv, "f:t:m:vs")) != -1) 
+	while ((opt = getopt(argc, argv, "f:t:m:vsS")) != -1) 
 	{
 		switch (opt) 
 		{
@@ -272,6 +275,9 @@ int main(int argc, char *argv[])
 				break;
 			case 's':
 				filter_sub=1;
+				break;
+			case 'S':
+				fast_mode=1;
 				break;
 			default:
 				arg_msg();

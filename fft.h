@@ -27,7 +27,7 @@
 #include <stdint.h>
 
 #define FFT_LEN 2048
-#define FFT_AVG 16
+#define FFT_AVG 2
 #define DETECTION_LEVEL 2
 #define SAMP_RATE 1014300
 #define BANDWIDTH 12500

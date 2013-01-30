@@ -33,7 +33,7 @@ demodproc* bin_list[FFT_LEN];
 demodproc* short_proc_list[FFT_LEN];
 int process_count=0;
 
-int create_process(int bin, long long int totalread, int filter_sub, int center_freq)
+int create_process(int bin, long long int totalread, int filter_sub, int center_freq, int fast)
 {
 	int i;
 	int in[2], out[2], pid;	
@@ -65,11 +65,22 @@ int create_process(int bin, long long int totalread, int filter_sub, int center_
 		{
 			filt_bot=0;
 		}
-		snprintf(cmdstring, 255, "rtl_fm -s 22050 -P -C -i 46 -l 150 - |"
-				"sox -t raw -r 22050 -e signed-integer -b 16 -c 1 -L - "
-				"-r 8000 %d_%lld.wav sinc %d-3000 -n 16 ",
-				(bin-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq,
-			 	totalread/SAMP_RATE/2, filt_bot);
+		if(fast)
+		{
+			snprintf(cmdstring, 255, "rtl_fm -s 22050 -P -C -i 46 -l 150 - |"
+					"sox -t raw -r 22050 -e signed-integer -b 16 -c 1 -L - "
+					"%d_%lld.wav",
+					(bin-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq,
+					totalread/SAMP_RATE/2);
+		}
+		else
+		{
+			snprintf(cmdstring, 255, "rtl_fm -s 22050 -P -C -i 46 -l 150 - |"
+					"sox -t raw -r 22050 -e signed-integer -b 16 -c 1 -L - "
+					"-r 8000 %d_%lld.wav sinc %d-3000 -n 16 ",
+					(bin-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq,
+					totalread/SAMP_RATE/2, filt_bot);
+		}
 
 		execl("/bin/sh", "sh", "-c", cmdstring , (char *)NULL);
 
@@ -149,7 +160,7 @@ int get_process_count()
 }
 
 void check_processes(double* bins, int* freqs, int freqcount, 
-		long long int total_read, int misses, int center_freq, int filter_sub) 
+		long long int total_read, int misses, int center_freq, int filter_sub, int fast) 
 {
 	int i,j;
 	int miss =1;
@@ -167,7 +178,7 @@ void check_processes(double* bins, int* freqs, int freqcount,
 				{
 					fprintf(stderr, "Creating process to demodulate %d Hz\n", 
 							(freqs[i]-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq);
-					create_process(freqs[i],total_read,filter_sub,center_freq);
+					create_process(freqs[i],total_read,filter_sub,center_freq, fast);
 				}
 				miss =0;
 				bin_list[freqs[i]]->detection_misses=0;
