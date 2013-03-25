@@ -114,6 +114,7 @@ int create_process(int bin, long long int totalread, int filter_sub, int center_
 
 	}
 
+	newproc->pid=pid;
 	newproc->inpipe = in[0];
 	newproc->outpipe = out[1];
 	newproc->bin = bin;
@@ -160,6 +161,7 @@ void end_process(demodproc* proc)
 	int i;
 	close(proc->outpipe);
 	close(proc->inpipe);
+	waitpid(proc->pid, NULL);
 	bin_list[proc->bin]=0;
 	free(proc);
 	

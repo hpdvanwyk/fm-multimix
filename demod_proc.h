@@ -38,6 +38,7 @@ typedef struct demodproc_struct
 	int outbuf_written;
 	sine_gen* real;
 	sine_gen* imag;
+	int pid;
 
 }
 demodproc;
