@@ -42,7 +42,7 @@ typedef struct demodproc_struct
 }
 demodproc;
 
-int create_process(int bin, long long int totalread, int filter_sub, int center_freq, int fast);
+int create_process(int bin, long long int totalread, int filter_sub, int center_freq, int fast, int squelch);
 void end_process(demodproc* proc);
 
 demodproc** get_process_list();
@@ -51,6 +51,6 @@ int get_process_count();
 //checks if process exists and creates if not, 
 //should handle small frequency instabilities
 void check_processes(double* bins, int* freqs, int freqcount, 
-		long long int total_read, int misses, int center_freq, int filter_sub, int fast); 
+		long long int total_read, int misses, int center_freq, int filter_sub, int fast, int squelch);
 
 #endif
