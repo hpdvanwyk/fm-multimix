@@ -26,6 +26,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <time.h>
 #include "fft.h"
 #include "demod_proc.h"
 
@@ -45,6 +46,10 @@ int create_process(int bin, long long int totalread, int filter_sub, int center_
 	{
 		char cmdstring[255];
 		int filt_bot;
+		char datestr[200];
+		time_t t;
+		struct tm *tmp;
+
 		//child process
 		close(STDIN_FILENO);
 		close(STDOUT_FILENO);
@@ -65,22 +70,38 @@ int create_process(int bin, long long int totalread, int filter_sub, int center_
 		{
 			filt_bot=0;
 		}
+
+		t = time(NULL);
+		tmp = gmtime(&t);
+		if (tmp == NULL) {
+			perror("gmtime");
+			exit(EXIT_FAILURE);
+		}
+		// ISO8601 date/time format
+		if (strftime(datestr, sizeof(datestr), "%FT%TZ", tmp) == 0) {
+			fprintf(stderr, "strftime returned 0");
+			exit(EXIT_FAILURE);
+		}
+
+		fprintf(stderr, "writing audio to %d_%s_%lld.wav\n", (bin-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq, datestr, totalread/SAMP_RATE/2);
 		if(fast)
 		{
 			snprintf(cmdstring, 255, "rtl_fm -s 22050 -P -C -i 46 -l %d - |"
 					"sox -t raw -r 22050 -e signed-integer -b 16 -c 1 -L - "
-					"%d_%lld.wav",
+					"%d_%s_%lld.wav",
 					squelch,
 					(bin-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq,
+					datestr,
 					totalread/SAMP_RATE/2);
 		}
 		else
 		{
 			snprintf(cmdstring, 255, "rtl_fm -s 22050 -P -C -i 46 -l %d - |"
 					"sox -t raw -r 22050 -e signed-integer -b 16 -c 1 -L - "
-					"-r 8000 %d_%lld.wav sinc %d-3000 -n 16 ",
+					"-r 8000 %d_%s_%lld.wav sinc %d-3000 -n 16 ",
 					squelch,
 					(bin-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq,
+					datestr,
 					totalread/SAMP_RATE/2, filt_bot);
 		}
 
