@@ -90,7 +90,7 @@ int create_process(int bin, long long int totalread, int filter_sub, int center_
 			snprintf(filestr, 255, "%d_%s_%lld.pcm", (bin-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq, datestr, totalread/SAMP_RATE/2);
 			snprintf(squelch_str, 20, "%d", squelch);
 			fprintf(stderr, "writing raw 22050Hz 16bit audio to %s\n", filestr);
-			execlp("rtl_fm", "rtl_fm", "-s", "22050", "-P", "-C", "-i", "46", "-l", squelch_str, filestr, (char*)NULL);
+			execlp("rtl_fm", "rtl_fm", "-s", "22050", "-P", "-C", "-i", "46", "-t", "5", "-l", squelch_str, filestr, (char*)NULL);
 
 			perror("Failed to start child process");
 			exit(1);
@@ -98,7 +98,7 @@ int create_process(int bin, long long int totalread, int filter_sub, int center_
 		else
 		{
 			fprintf(stderr, "writing audio to %d_%s_%lld.wav\n", (bin-(FFT_LEN/2))*SAMP_RATE/FFT_LEN+center_freq, datestr, totalread/SAMP_RATE/2);
-			snprintf(cmdstring, 255, "rtl_fm -s 22050 -P -C -i 46 -l %d - |"
+			snprintf(cmdstring, 255, "rtl_fm -s 22050 -P -C -i 46 -l %d -t 5 - |"
 					"sox -t raw -r 22050 -e signed-integer -b 16 -c 1 -L - "
 					"-r 8000 %d_%s_%lld.wav sinc %d-3000 -n 16 ",
 					squelch,
