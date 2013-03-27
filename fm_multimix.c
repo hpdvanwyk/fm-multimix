@@ -247,6 +247,7 @@ void arg_msg()
 									"\tbefore recording will stop (default 10, approx 10 seconds)]\n"
 									"\t[-s Filter out sub audible (<300 Hz) tones.]\n"	
 									"\t[-S Speed boost. Turns of nice features like output filtering\n"
+									"\t[-l Squelch level passed to rtl-fm. (default 0)]\n"
 									"\tin an attempt to improve speed. (defualt off)]\n"	
 			);
 	exit(1);
